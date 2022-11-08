@@ -27,15 +27,11 @@ last_ts = list(db_client.query('select * from P_SUM GROUP BY * ORDER BY desc LIM
 #uncomment when deploying
 #last_ts = 'now()'
 
-forecast_ts = iso8601.parse_date(last_ts) + timedelta(minutes=1)
-forecast_ts = forecast_ts.isoformat()
-
 #read models
-points = []
 for var in PRED_MODELS:
     input_vector = []
     for needed_var in CORR_GROUP[var]:
-        rs = db_client.query(f"select mean(value) from {needed_var} WHERE time > '{last_ts}' - 14m and time < '{last_ts}'group by time(1m)")
+        rs = db_client.query(f"select mean(value) from {needed_var} WHERE time > '{last_ts}' - 15m and time < '{last_ts}' -1m group by time(1m)")
         var_scaler = joblib.load(f'scalers/{needed_var}.scale')
         x = np.array([i['mean'] for i in rs.get_points(needed_var)]).reshape(-1, 1)
         input_vector.append(var_scaler.transform(x))
@@ -45,13 +41,9 @@ for var in PRED_MODELS:
     model = pickle.load(open('models/'+PRED_MODELS[var], 'rb'))
     result = model.predict(tensor)
     var_scaler = joblib.load(f'scalers/{var}.scale')
-    points.append({
-        "measurement": f"{var} Forecast",
-        "time": forecast_ts,
-        "fields": {"value": var_scaler.inverse_transform(result.reshape(1,1))[0][0]}
-    })
-print(points)
 
-print(db_client.write_points(points))
+    current_value = np.array([i['value'] for i in db_client.query(f'select * from {var} GROUP BY * ORDER BY desc LIMIT 1').get_points(var)][0]).reshape(1, 1)
+    scaled_cv = var_scaler.transform(current_value)
+    print(abs(scaled_cv - result) > AD_THRESHOLD[var])
 
 print('finished')
