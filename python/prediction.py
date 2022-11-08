@@ -4,20 +4,37 @@ from random import randint, choice
 import pandas as pd
 import tensorflow as tf
 
-from settings import CORR_GROUP, AD_THRESHOLD, PRED_MODELS
+from settings import CORR_GROUP, AD_THRESHOLD, PRED_MODELS, INFLUXDB_DATABASE, INFLUXDB_HOST, INFLUXDB_PASSWORD, INFLUXDB_PORT, INFLUXDB_USERNAME
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import pickle
 from influxdb import InfluxDBClient
 
+db_client = InfluxDBClient(
+    host=INFLUXDB_HOST,
+    port=INFLUXDB_PORT, 
+    username=INFLUXDB_USERNAME, 
+    password=INFLUXDB_PASSWORD, 
+    database=INFLUXDB_DATABASE
+)
 
-c = statsd.StatsClient('localhost', 8125, prefix='performance')
-db_client = InfluxDBClient(host="127.0.0.1",port=8086, username="", password="", database='influxdb-1')
+# Get Last Timestamp, remove when deploying
+last_ts = list(db_client.query('select * from P_SUM GROUP BY * ORDER BY desc LIMIT 1'))[0][0]['time']
+
+#uncomment when deploying
+#last_ts = 'now()'
 
 #read models
-models = {}
 for var in PRED_MODELS:
-    models = pickle.load(open('model/'+PRED_MODELS[var], 'rb'))
+    input_vector = []
+    for needed_var in CORR_GROUP[var]:
+        rs = db_client.query(f"select mean(value) from {needed_var} WHERE time > '{last_ts}' - 14m and time < '{last_ts}'group by time(1m)")
+        input_vector.append([i['mean'] for i in rs.get_points(needed_var)])
+    tensor = np.array(input_vector).transpose().reshape(-1, 15*len(CORR_GROUP[var]))
+    
+    model = pickle.load(open('models/'+PRED_MODELS[var], 'rb'))
+    result = model.predict(tensor)
+    print(result)
 
 print('finished')
 

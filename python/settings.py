@@ -62,15 +62,15 @@ CORR_GROUP = {
 
 PRED_MODELS = {
     'P_SUM': 'autosklearn_P_SUM',
-    'U_L1_N': 'autosklearn_U_L1_N',
-    'I_SUM': 'autosklearn_I_SUM',
+    #'U_L1_N': 'autosklearn_U_L1_N',
+    #'I_SUM': 'autosklearn_I_SUM',
     'H_TDH_I_L3_N': 'autosklearn_H_TDH_I_L3_N',
-    'F': 'autosklearn_F',
-    'ReacEc_L1': 'ReacEc_L1_model.sav',
-    'RealE_SUM': 'ReacE_SUM_model.sav',
-    'C_phi_L3': 'autosklearn_C_phi_L3',
-    'ReacEc_L3': 'ReacEc_L3_model.sav',
-    'H_TDH_U_L2_N': 'autosklearn_H_TDH_U_L2_N'
+    #'F': 'autosklearn_F',
+    #'ReacEc_L1': 'ReacEc_L1_model.sav',
+    'RealE_SUM': 'RealE_SUM_model.sav',
+    #'C_phi_L3': 'autosklearn_C_phi_L3',
+    #'ReacEc_L3': 'ReacEc_L3_model.sav',
+    #'H_TDH_U_L2_N': 'autosklearn_H_TDH_U_L2_N'
 }
 
 AD_THRESHOLD = {
@@ -86,7 +86,7 @@ AD_THRESHOLD = {
     'H_TDH_U_L2_N': 0.3
 }
 
-INFLUXDB_DATABASE = 'influxdb-1'
+INFLUXDB_DATABASE = 'bosch'
 INFLUXDB_USERNAME = ''
 INFLUXDB_PASSWORD = ''
 INFLUXDB_HOST = '127.0.0.1'
