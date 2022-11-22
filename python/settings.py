@@ -62,16 +62,18 @@ CORR_GROUP = {
 
 PRED_MODELS = {
     'P_SUM': 'autosklearn_P_SUM',
-    #'U_L1_N': 'autosklearn_U_L1_N',
-    #'I_SUM': 'autosklearn_I_SUM',
+    'U_L1_N': 'autosklearn_U_L1_N',
+    'I_SUM': 'autosklearn_I_SUM',
     'H_TDH_I_L3_N': 'autosklearn_H_TDH_I_L3_N',
-    #'F': 'autosklearn_F',
-    #'ReacEc_L1': 'ReacEc_L1_model.sav',
+    'F': 'autosklearn_F',
+    'ReacEc_L1': 'ReacEc_L1_model.sav',
     'RealE_SUM': 'RealE_SUM_model.sav',
-    #'C_phi_L3': 'autosklearn_C_phi_L3',
-    #'ReacEc_L3': 'ReacEc_L3_model.sav',
-    #'H_TDH_U_L2_N': 'autosklearn_H_TDH_U_L2_N'
+    'C_phi_L3': 'autosklearn_C_phi_L3',
+    'ReacEc_L3': 'ReacEc_L3_model.sav',
+    'H_TDH_U_L2_N': 'autosklearn_H_TDH_U_L2_N'
 }
+
+DATA_DIR = './data/'
 
 AD_THRESHOLD = {
     'P_SUM': 0.4,
@@ -85,6 +87,8 @@ AD_THRESHOLD = {
     'ReacEc_L3': 0.4,
     'H_TDH_U_L2_N': 0.3
 }
+
+LINREG_LIST = ['RealE_SUM', 'ReacEc_L1', 'ReacEc_L3']
 
 INFLUXDB_DATABASE = 'bosch'
 INFLUXDB_USERNAME = ''
