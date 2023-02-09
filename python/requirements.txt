@@ -24,6 +24,7 @@ ConfigSpace==0.4.21
 cycler==0.11.0
 Cython==0.29.28
 dacite==1.6.0
+daemon==1.2
 dask==2022.5.0
 datacommons==1.4.3
 datacommons-pandas==0.0.3

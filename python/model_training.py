@@ -9,6 +9,9 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 import argparse
 import pickle
+from sklearn.preprocessing import MinMaxScaler 
+import joblib
+import os
 
 def value_with_threshold(value):
     try:
@@ -46,6 +49,8 @@ if __name__ == '__main__':
                         help='Pick which model to train')
     parser.add_argument('-t', '--time', type=int, default=60,
                         help='Time in minutes for how much time to spend on training, defaults at one hour')
+    parser.add_argument('-f', '--file', type=str, default=None,
+                        help='Training file, if specified, if not the program retrieves the file from the default location')
     parser.add_argument('-i', '--input', type=int, default=15,
                         help='Input size, or History window, number of entries needed to make a forecast, defaults at 15mins')
     parser.add_argument('-o', '--output', type=int, default=1,
@@ -55,7 +60,17 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
 
-    input_df = pd.read_csv(f'{DATA_DIR}{args.model}.csv', index_col='Unnamed: 0')
+    if args.file is not None:
+        if not os.path.exists(args.file):
+            raise Exception("Input File does not exist")
+        input_df = pd.read_csv(args.file, usecols=CORR_GROUP[args.model])
+        #update scalers
+        scaler = MinMaxScaler()
+        for c in CORR_GROUP[args.model]:
+            input_df[c] = scaler.fit_transform(np.array(input_df[c]).reshape(-1,1))
+            joblib.dump(scaler, f'new_scalers/{c}.scale')
+    else:
+        input_df = pd.read_csv(f'{DATA_DIR}{args.model}.csv', index_col='Unnamed: 0')
     values = create_supervised_dataset(input_df, args.model, CORR_GROUP[args.model], n_in=args.input, n_out=args.output)
     len_values = values.shape[0]
     # split into train and test sets 
